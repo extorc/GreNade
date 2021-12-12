@@ -2,13 +2,7 @@
 
 #include "vec3.h"
 #include "Ray.h"
-
-struct hit_record
-{
-  point3 p;
-  vec3 normal;
-  float t;
-};
+#include "hit_record.h"
 
 class Hittable
 {
