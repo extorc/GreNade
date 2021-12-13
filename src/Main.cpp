@@ -1,23 +1,38 @@
 #include <iostream>
 #include <memory>
 #include <limits>
-#include "vec3.h"
 #include "Ray.h"
 #include "Camera.h"
 #include "Hittable.h"
 #include "Sphere.h"
-#include "hittable_list.h"
+#include "Hittable_list.h"
 
-vec3 ColorRay(Ray &r, Hittable_list &world)
+vec3 ColorRay(Ray &r, Hittable_list &world, int depth)
 {
     hit_record rec;
 
+    if (depth <= 0)
+    {
+        return color(0, 0, 0);
+    }
+
     if (world.hit(r, 0, std::numeric_limits<double>::infinity(), rec))
-        return vec3(rec.normal.x() + 0.5, rec.normal.y() + 0.5, rec.normal.z() + 0.5);
+    {
+        point3 target = rec.p + rec.normal + random_in_unit_sphere();
+        Ray newRay(rec.p, target - rec.p);
+        return 0.5 * ColorRay(newRay, world, depth - 1);
+    }
 
     vec3 unit_direction = unit_vector(r.direction());
     auto t = 0.5 * (unit_direction.y() + 1.0);
     return (float)(1.0 - t) * vec3(1.0, 1.0, 1.0) + t * vec3(0.5, 0.7, 1.0);
+}
+
+void WriteColor(color pixel_color)
+{
+    std::cout << static_cast<int>(255.999 * pixel_color.x()) << ' '
+              << static_cast<int>(255.999 * pixel_color.y()) << ' '
+              << static_cast<int>(255.999 * pixel_color.z()) << '\n';
 }
 
 int main()
@@ -25,6 +40,7 @@ int main()
     const auto aspect_ratio = 16.0 / 9.0;
     const int image_width = 400;
     const int image_height = static_cast<int>(image_width / aspect_ratio);
+    const int depth = 50;
 
     Hittable_list world;
     world.add(std::make_shared<Sphere>(point3(0, 0, -1), 0.5));
@@ -42,14 +58,14 @@ int main()
 
         for (int i = 0; i < image_width; i++)
         {
+            color pixel_color(0, 0, 0);
             auto u = double(i) / (image_width - 1);
             auto v = double(j) / (image_height - 1);
 
             Ray r(camera.origin, camera.lower_left_corner + (float)u * camera.horizontal + (float)v * camera.vertical - camera.origin);
-            vec3 pixel_color = ColorRay(r, world);
-            std::cout << static_cast<int>(255.999 * pixel_color.x()) << ' '
-                      << static_cast<int>(255.999 * pixel_color.y()) << ' '
-                      << static_cast<int>(255.999 * pixel_color.z()) << '\n';
+            pixel_color += ColorRay(r, world, depth);
+
+            WriteColor(pixel_color);
         }
     }
 

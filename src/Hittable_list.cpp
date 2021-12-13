@@ -1,7 +1,7 @@
 #include "Hittable_list.h"
 #include "hit_record.h"
 
-bool Hittable_list::hit(Ray &r, float t_min, float t_max, hit_record &rec) const
+bool Hittable_list::hit(Ray &r, float t_min, float t_max, hit_record &rec)
 {
   hit_record temp_rec;
   bool hit_anything = false;
