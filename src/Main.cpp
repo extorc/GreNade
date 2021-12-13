@@ -28,11 +28,30 @@ vec3 ColorRay(Ray &r, Hittable_list &world, int depth)
     return (float)(1.0 - t) * vec3(1.0, 1.0, 1.0) + t * vec3(0.5, 0.7, 1.0);
 }
 
-void WriteColor(color pixel_color)
+inline double clamp(double x, double min, double max)
 {
-    std::cout << static_cast<int>(255.999 * pixel_color.x()) << ' '
-              << static_cast<int>(255.999 * pixel_color.y()) << ' '
-              << static_cast<int>(255.999 * pixel_color.z()) << '\n';
+    if (x < min)
+        return min;
+    if (x > max)
+        return max;
+    return x;
+}
+
+void WriteColor(color pixel_color, int sample_count)
+{
+    auto r = pixel_color.x();
+    auto g = pixel_color.y();
+    auto b = pixel_color.z();
+
+    auto scale = 1.0 / sample_count;
+
+    r *= scale;
+    g *= scale;
+    b *= scale;
+
+    std::cout << static_cast<int>(256 * clamp(r, 0.0, 0.999)) << ' '
+              << static_cast<int>(256 * clamp(g, 0.0, 0.999)) << ' '
+              << static_cast<int>(256 * clamp(b, 0.0, 0.999)) << '\n';
 }
 
 int main()
@@ -40,9 +59,9 @@ int main()
     const auto aspect_ratio = 16.0 / 9.0;
     const int image_width = 400;
     const int image_height = static_cast<int>(image_width / aspect_ratio);
-    const int depth = 20; //Light Bounces > in a diffused lighting environment , light bounces around objects
+    const int depth = 50; //Light Bounces > in a diffused lighting environment , light bounces around objects
     //this variable defines , the maximum number of times a light ray can bounce off
-    const int sample_count = 10;
+    const int sample_count = 100;
 
     Hittable_list world;
     world.add(std::make_shared<Sphere>(point3(0, 0, -1), 0.5));
@@ -71,9 +90,8 @@ int main()
             {
                 pixel_color += ColorRay(r, world, depth);
             }
-            pixel_color *= (float)(1.0 / sample_count);
 
-            WriteColor(pixel_color);
+            WriteColor(pixel_color, sample_count);
         }
     }
 

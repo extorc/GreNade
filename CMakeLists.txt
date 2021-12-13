@@ -4,6 +4,11 @@ project(GreNade)
 
 include_directories(GreNade)
 
+set(INC 
+  src/
+  src/Utility/
+)
+
 file(GLOB_RECURSE GreNade_SRC
   src/*.cpp
   src/*.h
@@ -12,3 +17,5 @@ file(GLOB_RECURSE GreNade_SRC
 )
 
 add_executable(GreNade ${GreNade_SRC})
+
+target_include_directories(GreNade PUBLIC ${INC})
