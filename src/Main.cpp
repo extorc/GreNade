@@ -40,13 +40,15 @@ int main()
     const auto aspect_ratio = 16.0 / 9.0;
     const int image_width = 400;
     const int image_height = static_cast<int>(image_width / aspect_ratio);
-    const int depth = 50;
+    const int depth = 20; //Light Bounces > in a diffused lighting environment , light bounces around objects
+    //this variable defines , the maximum number of times a light ray can bounce off
+    const int sample_count = 10;
 
     Hittable_list world;
     world.add(std::make_shared<Sphere>(point3(0, 0, -1), 0.5));
     world.add(std::make_shared<Sphere>(point3(0, -100.5, -1), 100));
 
-    Camera camera;
+    Camera camera; // Camera Struct holding const data
 
     std::cout << "P3\n"
               << image_width << " " << image_height << "\n255\n";
@@ -63,7 +65,13 @@ int main()
             auto v = double(j) / (image_height - 1);
 
             Ray r(camera.origin, camera.lower_left_corner + (float)u * camera.horizontal + (float)v * camera.vertical - camera.origin);
-            pixel_color += ColorRay(r, world, depth);
+            // Generate a ray pointing at a pixel
+
+            for (int i = 0; i < sample_count; i++)
+            {
+                pixel_color += ColorRay(r, world, depth);
+            }
+            pixel_color *= (float)(1.0 / sample_count);
 
             WriteColor(pixel_color);
         }
