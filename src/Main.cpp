@@ -68,7 +68,7 @@ int main()
     world.add(std::make_shared<Sphere>(point3(0, 0, -1), 0.5));
     world.add(std::make_shared<Sphere>(point3(0, -100.5, -1), 100));
 
-    Camera camera;
+    Camera camera; // Camera Struct holding const data
 
     std::cout << "P3\n"
               << image_width << " " << image_height << "\n255\n";
