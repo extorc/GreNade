@@ -7,6 +7,9 @@ include_directories(GreNade)
 set(INC 
   src/
   src/Utility/
+  src/Hittable/
+  src/Materials
+  src/Objects
 )
 
 file(GLOB_RECURSE GreNade_SRC
