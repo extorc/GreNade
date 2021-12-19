@@ -6,6 +6,8 @@
 #include "Hittable.h"
 #include "Sphere.h"
 #include "Hittable_list.h"
+#include "Lambertian.h"
+#include "Metal.h"
 
 vec3 ColorRay(Ray &r, Hittable_list &world, int depth)
 {
@@ -18,11 +20,12 @@ vec3 ColorRay(Ray &r, Hittable_list &world, int depth)
 
     if (world.hit(r, 0.01, std::numeric_limits<double>::infinity(), rec))
     {
-        point3 target = rec.p + rec.normal + unit_vector(random_in_unit_sphere());
-        Ray newRay(rec.p, target - rec.p);
-        return 0.5 * ColorRay(newRay, world, depth - 1);
-        // return color(1, 0, 0);
-        ;
+        Ray scattered;
+        color attenuation;
+        if (rec.mat_ptr->Scatter(r, rec, attenuation, scattered))
+            return attenuation * ColorRay(scattered, world, depth - 1);
+
+        return color(0, 0, 0);
     }
 
     vec3 unit_direction = unit_vector(r.direction());
@@ -65,8 +68,13 @@ int main()
     const int sample = 50;
 
     Hittable_list world;
-    world.add(std::make_shared<Sphere>(point3(0, 0, -1), 0.5));
-    world.add(std::make_shared<Sphere>(point3(0, -100.5, -1), 100));
+    // world.add(std::make_shared<Sphere>(point3(0, 0, -1), 0.5));
+    // world.add(std::make_shared<Sphere>(point3(0, -100.5, -1), 100));
+
+    world.add(std::make_shared<Sphere>(point3(0.0, -100.5, -1.0), 100.0, std::make_shared<Lambertian>(color(0.8, 0.8, 0.0))));
+    world.add(std::make_shared<Sphere>(point3(0.0, 0.0, -1.0), 0.5, std::make_shared<Lambertian>(color(0.7, 0.3, 0.3))));
+    world.add(std::make_shared<Sphere>(point3(-1.5, 0.0, -1.0), 0.5, std::make_shared<Metal>(color(0.8, 0.8, 0.8))));
+    world.add(std::make_shared<Sphere>(point3(1.5, 0.0, -1.0), 0.5, std::make_shared<Metal>(color(0.8, 0.6, 0.2))));
 
     Camera camera; // Camera Struct holding const data
 
