@@ -73,8 +73,9 @@ int main()
 
     world.add(std::make_shared<Sphere>(point3(0.0, -100.5, -1.0), 100.0, std::make_shared<Lambertian>(color(0.8, 0.8, 0.0))));
     world.add(std::make_shared<Sphere>(point3(0.0, 0.0, -1.0), 0.5, std::make_shared<Lambertian>(color(0.7, 0.3, 0.3))));
-    world.add(std::make_shared<Sphere>(point3(-1.5, 0.0, -1.0), 0.5, std::make_shared<Metal>(color(0.8, 0.8, 0.8))));
-    world.add(std::make_shared<Sphere>(point3(1.5, 0.0, -1.0), 0.5, std::make_shared<Metal>(color(0.8, 0.6, 0.2))));
+    world.add(std::make_shared<Sphere>(point3(-1.0, 0.0, -1.0), 0.5, std::make_shared<Metal>(color(0.8, 0.8, 0.8), 0.3)));
+    world.add(std::make_shared<Sphere>(point3(1.0, 0.0, -1.0), 0.5, std::make_shared<Metal>(color(0.8, 0.6, 0.2), 1.0)));
+    world.add(std::make_shared<Sphere>(point3(0.0, 1.0, -1.0), 0.5, std::make_shared<Metal>(color(0.8, 0.6, 0.2), 0.1)));
 
     Camera camera; // Camera Struct holding const data
 
